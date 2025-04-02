@@ -51,3 +51,6 @@ rsconnect/
 
 # Rproj file
 symebcovmf.Rproj
+
+# DS_Store
+.DS_Store
