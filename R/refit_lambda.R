@@ -18,7 +18,7 @@ refit_lambda <- function(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6)){
     obj_diff <- Inf
     curr_elbo <- -Inf
     while((iter <= maxiter) && (obj_diff > tol)){
-      print(iter)
+      # print(iter)
       # Update lambdas
       lambda.old <- sym_ebcovmf_obj$lambda
       for (k in 1:K){
