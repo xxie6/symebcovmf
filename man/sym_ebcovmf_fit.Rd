@@ -4,7 +4,15 @@
 \alias{sym_ebcovmf_fit}
 \title{Fit rank K symEBcovMF model}
 \usage{
-sym_ebcovmf_fit(S, ebnm_fn, Kmax, maxiter, rank_one_tol, tol)
+sym_ebcovmf_fit(
+  S,
+  ebnm_fn,
+  Kmax,
+  maxiter,
+  rank_one_tol,
+  tol,
+  refit_lam = FALSE
+)
 }
 \arguments{
 \item{S}{A n-by-n Gram/covariance matrix}
@@ -18,6 +26,8 @@ sym_ebcovmf_fit(S, ebnm_fn, Kmax, maxiter, rank_one_tol, tol)
 \item{rank_one_tol}{The convergence tolerance for the rank one fit}
 
 \item{tol}{The convergence tolerance for the rank K fit}
+
+\item{refit_lam}{True or False for if you want to refit the lambda values after each factor is added}
 }
 \value{
 A symEBcovMF object
