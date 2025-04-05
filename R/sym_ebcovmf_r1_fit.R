@@ -28,7 +28,7 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol){
 
   # initialize other values
   R2 <- R2k - lambda_k^2
-  resid_s2 <- 0
+  resid_s2 <- estimate_resid_s2(n = sym_ebcovmf_obj$n, R2 = R2)
   rank_one_KL <- 0
   curr_elbo <- -Inf
   obj_diff <- Inf
@@ -37,10 +37,6 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol){
 
   sym_ebcovmf_obj$vec_elbo_full <- c(sym_ebcovmf_obj$vec_elbo_full, K)
   while((iter <= maxiter) && (obj_diff > tol)){
-    # update resid_s2
-    resid_s2.old <- resid_s2
-    resid_s2 <- estimate_resid_s2(n = sym_ebcovmf_obj$n, R2 = R2)
-
     # update l; power iteration step
     v.old <- v
     x <- R %*% v
@@ -67,6 +63,10 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol){
     rank_one_KL.old <- rank_one_KL
     rank_one_KL <- as.numeric(e$log_likelihood) +
       - normal_means_loglik(x, sqrt(resid_s2), e$posterior$mean, e$posterior$mean^2 + e$posterior$sd^2)
+
+    # update resid_s2
+    resid_s2.old <- resid_s2
+    resid_s2 <- estimate_resid_s2(n = sym_ebcovmf_obj$n, R2 = R2)
 
     # check convergence
     curr_elbo.old <- curr_elbo
