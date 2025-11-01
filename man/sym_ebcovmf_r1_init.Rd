@@ -4,10 +4,12 @@
 \alias{sym_ebcovmf_r1_init}
 \title{Initialize the greedily added factor}
 \usage{
-sym_ebcovmf_r1_init(R)
+sym_ebcovmf_r1_init(R, nonnegative = TRUE)
 }
 \arguments{
 \item{R}{An n-by-n symmetric matrix}
+
+\item{nonnegative}{A TRUE/FALSE value for whether the initialization is constrained to be nonnegative}
 }
 \value{
 An initial estimate for the factor

@@ -4,7 +4,15 @@
 \alias{sym_ebcovmf_r1_fit}
 \title{Fit rank one symEBcovMF model}
 \usage{
-sym_ebcovmf_r1_fit(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol)
+sym_ebcovmf_r1_fit(
+  S,
+  sym_ebcovmf_obj,
+  ebnm_fn,
+  maxiter,
+  tol,
+  v_init = NULL,
+  sign_constraint = NULL
+)
 }
 \arguments{
 \item{S}{An n-by-n Gram/covariance matrix}
@@ -16,6 +24,10 @@ sym_ebcovmf_r1_fit(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol)
 \item{maxiter}{The maximum number of iterations used during optimization}
 
 \item{tol}{The convergence tolerance parameter used during optimization}
+
+\item{v_init}{An initial estimate for the loadings vector estimate. Default is NULL}
+
+\item{sign_constraint}{The sign constraint (if any) for the loadings estimate}
 }
 \value{
 A symEBcovMF object

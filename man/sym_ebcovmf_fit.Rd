@@ -11,6 +11,7 @@ sym_ebcovmf_fit(
   maxiter,
   rank_one_tol,
   tol,
+  sign_constraint = "nonnegative",
   refit_lam = FALSE
 )
 }
@@ -26,6 +27,8 @@ sym_ebcovmf_fit(
 \item{rank_one_tol}{The convergence tolerance for the rank one fit}
 
 \item{tol}{The convergence tolerance for the rank K fit}
+
+\item{sign_constraint}{The sign constraint (if any) for the loadings estimate}
 
 \item{refit_lam}{True or False for if you want to refit the lambda values after each factor is added}
 }
