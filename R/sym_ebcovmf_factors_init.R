@@ -16,19 +16,23 @@ sym_ebcovmf_factors_init <- function(S, sym_ebcovmf_obj, init_L, init_lambda){
 
   sym_ebcovmf_obj$L_pm <- init_L
   sym_ebcovmf_obj$lambda <- init_lambda
+  K <- ncol(init_L)
+  n <- nrow(init_L)
+  sym_ebcovmf_obj$KL <- rep(0, K)
+  sym_ebcovmf_obj$fitted_gs <- rep(list(NULL), K)
 
   sym_ebcovmf_obj$resid_s2 <- estimate_resid_s2(S = S,
                                                 L = sym_ebcovmf_obj$L_pm,
                                                 lambda = sym_ebcovmf_obj$lambda,
-                                                n = nrow(init_L),
-                                                K = length(sym_ebcovmf_obj$lambda))
+                                                n = n,
+                                                K = K)
 
   sym_ebcovmf_obj$elbo <- compute_elbo(S = S,
                                        L = sym_ebcovmf_obj$L_pm,
                                        lambda = sym_ebcovmf_obj$lambda,
                                        resid_s2 = sym_ebcovmf_obj$resid_s2,
-                                       n = nrow(init_L),
-                                       K = length(sym_ebcovmf_obj$lambda),
-                                       KL = rep(0, length(sym_ebcovmf_obj$lambda)))
+                                       n = n,
+                                       K = K,
+                                       KL = sym_ebcovmf_obj$KL)
   return(sym_ebcovmf_obj)
 }
