@@ -6,6 +6,7 @@
 #' @param tol The convergence tolerance for the optimization
 #' @param v_init An initial estimate for the factor
 #' @param lambda_k An initial estimate for the factor weight, lambda
+#' @param g_k_init An initial estimate for the prior; can be set to NULL
 #' @param R2k The R2 value computed using the other factors
 #' @param n The number of samples
 #' @param KL The KL values for the other factors
@@ -14,13 +15,13 @@
 #' @export
 #'
 
-optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, R2k, n, KL){
+optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, g_k_init, R2k, n, KL){
   R2 <- R2k + lambda_k^2 - 2*lambda_k*as.numeric(t(v_init)%*% R %*%matrix(v_init, ncol = 1))
   resid_s2 <- estimate_resid_s2(n = n, R2 = R2)
   rank_one_KL <- 0
   curr_elbo <- -Inf
   obj_diff <- Inf
-  fitted_g_k <- NULL
+  fitted_g_k <- g_k_init
   iter <- 1
   vec_elbo_full <- NULL
   v <- v_init
