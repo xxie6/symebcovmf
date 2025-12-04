@@ -15,7 +15,7 @@
 #'
 
 optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, R2k, n, KL){
-  R2 <- R2k - lambda_k^2
+  R2 <- R2k + lambda_k^2 - 2*lambda_k*as.numeric(t(v_init)%*% R %*%matrix(v_init, ncol = 1))
   resid_s2 <- estimate_resid_s2(n = n, R2 = R2)
   rank_one_KL <- 0
   curr_elbo <- -Inf
