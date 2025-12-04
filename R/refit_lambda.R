@@ -66,6 +66,7 @@ refit_lambda <- function(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6), remov
       sym_ebcovmf_obj$lambda <- sym_ebcovmf_obj$lambda[idx]
       sym_ebcovmf_obj$L_pm <- sym_ebcovmf_obj$L_pm[,idx]
       sym_ebcovmf_obj$KL <- sym_ebcovmf_obj$KL[idx]
+      sym_ebcovmf_obj$fitted_gs <- sym_ebcovmf_obj$fitted_gs[idx]
       sym_ebcovmf_obj$resid_s2 <- estimate_resid_s2(S = S,
                                                     L = sym_ebcovmf_obj$L_pm,
                                                     lambda = sym_ebcovmf_obj$lambda,
