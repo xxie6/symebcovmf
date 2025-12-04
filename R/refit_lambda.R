@@ -4,11 +4,12 @@
 #' @param sym_ebcovmf_obj A symEBcovMF object
 #' @param maxiter The maximum number of iterations for optimization
 #' @param tol The convergence tolerance parameter for optimization
+#' @param remove_null A True/False value for whether to remove factors with zero weight
 #'
 #' @return A symEBcovMF object
 #' @export
 #'
-refit_lambda <- function(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6)){
+refit_lambda <- function(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6), remove_null = TRUE){
   K <- length(sym_ebcovmf_obj$lambda)
   if (K <= 1){
     print('Cannot refit lambda')
@@ -58,8 +59,10 @@ refit_lambda <- function(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6)){
       iter <- iter + 1
     }
     # nullcheck
-    if (any(sym_ebcovmf_obj$lambda == 0)){
+    if (any(sym_ebcovmf_obj$lambda == 0) & remove_null == TRUE){
       idx <- which(sym_ebcovmf_obj$lambda != 0)
+      # print(idx)
+      K <- length(idx) # I just added this
       sym_ebcovmf_obj$lambda <- sym_ebcovmf_obj$lambda[idx]
       sym_ebcovmf_obj$L_pm <- sym_ebcovmf_obj$L_pm[,idx]
       sym_ebcovmf_obj$KL <- sym_ebcovmf_obj$KL[idx]
@@ -77,6 +80,8 @@ refit_lambda <- function(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6)){
                                 KL = sym_ebcovmf_obj$KL)
     }
     # check objective function
+    # print(curr_elbo)
+    # print(sym_ebcovmf_obj.old$elbo)
     if ((curr_elbo - sym_ebcovmf_obj.old$elbo) < 0){
       sym_ebcovmf_obj <- sym_ebcovmf_obj.old
     } else {
