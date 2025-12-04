@@ -35,13 +35,19 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
       factor_proposed <- optimize_factor(R, ebnm_fn, optim_maxiter, optim_tol, sym_ebcovmf_obj$L_pm[,k], sym_ebcovmf_obj$lambda[k], sym_ebcovmf_obj$fitted_gs[[k]], R2k, sym_ebcovmf_obj$n, sym_ebcovmf_obj$KL[-k])
 
       # update object
-      sym_ebcovmf_obj$L_pm[,k] <- factor_proposed$v
-      sym_ebcovmf_obj$KL[k] <- factor_proposed$rank_one_KL
-      sym_ebcovmf_obj$lambda[k] <- factor_proposed$lambda_k
-      sym_ebcovmf_obj$resid_s2 <- factor_proposed$resid_s2
-      sym_ebcovmf_obj$fitted_gs[[k]] <- factor_proposed$fitted_g_k
-      sym_ebcovmf_obj$elbo <- factor_proposed$curr_elbo
-      sym_ebcovmf_obj$backfit_vec_elbo_full <- c(sym_ebcovmf_obj$backfit_vec_elbo_full, factor_proposed$vec_elbo_full)
+      # check if update leads to increase in objective function
+      if (factor_proposed$elbo > sym_ebcovmf_obj$elbo){
+        sym_ebcovmf_obj$L_pm[,k] <- factor_proposed$v
+        sym_ebcovmf_obj$KL[k] <- factor_proposed$rank_one_KL
+        sym_ebcovmf_obj$lambda[k] <- factor_proposed$lambda_k
+        sym_ebcovmf_obj$resid_s2 <- factor_proposed$resid_s2
+        sym_ebcovmf_obj$fitted_gs[[k]] <- factor_proposed$fitted_g_k
+        sym_ebcovmf_obj$elbo <- factor_proposed$curr_elbo
+        sym_ebcovmf_obj$backfit_vec_elbo_full <- c(sym_ebcovmf_obj$backfit_vec_elbo_full, factor_proposed$vec_elbo_full)
+      } else {
+        obj_diff <- sym_ebcovmf_obj$elbo - factor_proposed$elbo
+        print(paste('update to factor', k, 'decreased the elbo by', abs(obj_diff)))
+      }
 
       #print(sym_ebcovmf_obj$elbo)
       # sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj) # add refitting step?
@@ -51,7 +57,6 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
 
     iter <- iter + 1
     obj_diff <- abs(sym_ebcovmf_obj$elbo - obj_old)
-    # need to add check if it is negative?
   }
   # nullcheck
   sym_ebcovmf_obj <- nullcheck_factors(sym_ebcovmf_obj)
