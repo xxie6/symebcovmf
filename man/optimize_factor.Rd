@@ -4,7 +4,18 @@
 \alias{optimize_factor}
 \title{Optimize one factor}
 \usage{
-optimize_factor(R, ebnm_fn, maxiter, tol, v_init, lambda_k, R2k, n, KL)
+optimize_factor(
+  R,
+  ebnm_fn,
+  maxiter,
+  tol,
+  v_init,
+  lambda_k,
+  g_k_init,
+  R2k,
+  n,
+  KL
+)
 }
 \arguments{
 \item{R}{An n-by-n residual matrix}
@@ -18,6 +29,8 @@ optimize_factor(R, ebnm_fn, maxiter, tol, v_init, lambda_k, R2k, n, KL)
 \item{v_init}{An initial estimate for the factor}
 
 \item{lambda_k}{An initial estimate for the factor weight, lambda}
+
+\item{g_k_init}{An initial estimate for the prior; can be set to NULL}
 
 \item{R2k}{The R2 value computed using the other factors}
 

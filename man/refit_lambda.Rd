@@ -4,7 +4,13 @@
 \alias{refit_lambda}
 \title{Refit lambda}
 \usage{
-refit_lambda(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6))
+refit_lambda(
+  S,
+  sym_ebcovmf_obj,
+  maxiter = 100,
+  tol = 10^(-6),
+  remove_null = TRUE
+)
 }
 \arguments{
 \item{S}{An n-by-n Gram/covariance matrix}
@@ -14,6 +20,8 @@ refit_lambda(S, sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6))
 \item{maxiter}{The maximum number of iterations for optimization}
 
 \item{tol}{The convergence tolerance parameter for optimization}
+
+\item{remove_null}{A True/False value for whether to remove factors with zero weight}
 }
 \value{
 A symEBcovMF object
