@@ -19,7 +19,7 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
   sym_ebcovmf_obj$backfit_iter_elbo_vec <- NULL
 
   # refit lambda
-  sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj, maxiter = 25)
+  # sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj, maxiter = 25)
 
   while((iter <= backfit_maxiter) && (obj_diff > backfit_tol)){
     # print(iter)
@@ -44,7 +44,7 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
       sym_ebcovmf_obj$backfit_vec_elbo_full <- c(sym_ebcovmf_obj$backfit_vec_elbo_full, factor_proposed$vec_elbo_full)
 
       #print(sym_ebcovmf_obj$elbo)
-      sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj) # add refitting step?
+      # sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj) # add refitting step?
       #print(sym_ebcovmf_obj$elbo)
     }
     sym_ebcovmf_obj$backfit_iter_elbo_vec <- c(sym_ebcovmf_obj$backfit_iter_elbo_vec, sym_ebcovmf_obj$elbo)
