@@ -36,7 +36,7 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
 
       # update object
       # check if update leads to increase in objective function
-      if (factor_proposed$elbo > sym_ebcovmf_obj$elbo){
+      if (factor_proposed$curr_elbo > sym_ebcovmf_obj$elbo){
         sym_ebcovmf_obj$L_pm[,k] <- factor_proposed$v
         sym_ebcovmf_obj$KL[k] <- factor_proposed$rank_one_KL
         sym_ebcovmf_obj$lambda[k] <- factor_proposed$lambda_k
