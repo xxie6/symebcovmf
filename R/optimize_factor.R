@@ -35,6 +35,16 @@ optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, g_k_init
     if (scaling_factor == 0){ # check if scaling factor is zero
       scaling_factor <- Inf
       v <- e$posterior$mean/scaling_factor
+      lambda_k <- 0
+      R2 <- R2k
+      fitted_g_k <- e$fitted_g
+      rank_one_KL <- as.numeric(e$log_likelihood) +
+        - normal_means_loglik(x, sqrt(resid_s2), e$posterior$mean, e$posterior$mean^2 + e$posterior$sd^2)
+      resid_s2 <- estimate_resid_s2(n = n, R2 = R2)
+      curr_elbo <- compute_elbo(resid_s2 = resid_s2,
+                                n = n,
+                                KL = c(KL, rank_one_KL),
+                                R2 = R2)
       print('Warning: scaling factor is zero')
       break
     }
