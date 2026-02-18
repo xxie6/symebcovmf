@@ -66,7 +66,7 @@ optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, g_k_init
 
     # update resid_s2
     resid_s2.old <- resid_s2
-    resid_s2 <- estimate_resid_s2(n = n, R2 = R2) # this goes negative?????
+    resid_s2 <- max(estimate_resid_s2(n = n, R2 = R2), 1e-10)
 
     # check convergence - maybe change to rank-one obj function
     curr_elbo.old <- curr_elbo
