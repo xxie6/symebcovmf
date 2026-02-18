@@ -10,6 +10,10 @@ sym_ebcovmf_r1_init <- function(R, nonnegative = TRUE){
   svd1 <- RSpectra::eigs_sym(R, k = 1)
   v <- svd1$vectors # scaled such that v'v = 1
   lambda_k <- svd1$values
+  if(lambda_k < 0){
+    warning('Leading Eigenvalue of Matrix is Negative. Returning NULL for Initialization.')
+    return(list(v = NULL, lambda_k = lambda_k))
+  }
   if(nonnegative == TRUE){
     svd_v <- v
     v <- pmax(svd_v, 0)
