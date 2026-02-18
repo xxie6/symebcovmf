@@ -40,6 +40,12 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
     lambda_k <- drop(t(v) %*% R %*% v)
   }
 
+  # check if initial value of lambda is positive. if not, stop function.
+  if (lambda_k <= 0){
+    warning('Initial value of scaling factor is zero or nonnegative.')
+    return(sym_ebcovmf_obj)
+  }
+
   # initialize other values
   R2 <- R2k - lambda_k^2
   resid_s2 <- estimate_resid_s2(n = sym_ebcovmf_obj$n, R2 = R2)
@@ -59,7 +65,17 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
     if (scaling_factor == 0){ # check if scaling factor is zero
       scaling_factor <- Inf
       v <- e$posterior$mean/scaling_factor
-      print('Warning: scaling factor is zero')
+      lambda_k <- 0
+      R2 <- R2k
+      fitted_g_k <- e$fitted_g
+      rank_one_KL <- as.numeric(e$log_likelihood) +
+        - normal_means_loglik(x, sqrt(resid_s2), e$posterior$mean, e$posterior$mean^2 + e$posterior$sd^2)
+      resid_s2 <- estimate_resid_s2(n = sym_ebcovmf_obj$n, R2 = R2)
+      curr_elbo <- compute_elbo(resid_s2 = resid_s2,
+                                n = sym_ebcovmf_obj$n,
+                                KL = c(sym_ebcovmf_obj$KL, rank_one_KL),
+                                R2 = R2)
+      warning('scaling factor is zero')
       break
     }
     v <- e$posterior$mean/scaling_factor
@@ -98,7 +114,7 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
       lambda_k <- lambda_k.old
       curr_elbo <- curr_elbo.old
       fitted_g_k <- fitted_g_k.old
-      print(paste('elbo decreased by', abs(obj_diff)))
+      print(paste('Update to factor', K, 'decreased elbo by', abs(obj_diff)))
       break
     }
     sym_ebcovmf_obj$vec_elbo_full <- c(sym_ebcovmf_obj$vec_elbo_full, curr_elbo)
