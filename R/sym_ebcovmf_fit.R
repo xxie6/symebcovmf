@@ -20,6 +20,7 @@ sym_ebcovmf_fit <- function(S, ebnm_fn, Kmax, maxiter, rank_one_tol, tol, sign_c
   obj_diff <- Inf
   while ((curr_rank < Kmax) & (obj_diff > tol)){
     # add factor
+    print(paste('Adding factor', (curr_rank + 1)))
     sym_ebcovmf_obj <- sym_ebcovmf_r1_fit(S, sym_ebcovmf_obj, ebnm_fn, maxiter, rank_one_tol, sign_constraint = sign_constraint)
 
     # check if new factor was added
@@ -32,6 +33,9 @@ sym_ebcovmf_fit <- function(S, ebnm_fn, Kmax, maxiter, rank_one_tol, tol, sign_c
           sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj)
         }
         obj_diff <- sym_ebcovmf_obj$vec_elbo_K[curr_rank + 1] - sym_ebcovmf_obj$vec_elbo_K[curr_rank]
+        if (obj_diff < tol){
+          print(paste0('The objective function difference is: ', obj_diff, '. We will stop adding factors.' ))
+        }
       }
     }
     curr_rank <- curr_rank + 1
