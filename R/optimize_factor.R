@@ -30,7 +30,13 @@ optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, g_k_init
     # update l; power iteration step
     v.old <- v
     x <- R %*% v
-    e <- ebnm_fn(x = x, s = sqrt(resid_s2), g_init = fitted_g_k)
+    if (iter == 1){
+      e <- ebnm_fn(x = x,
+                   s = sqrt(resid_s2*(as.numeric(t(v) %*% R %*% v)/lambda_k)),
+                   g_init = fitted_g_k)
+    } else {
+      e <- ebnm_fn(x = x, s = sqrt(resid_s2), g_init = fitted_g_k)
+    }
     scaling_factor <- sqrt(sum(e$posterior$mean^2) + sum(e$posterior$sd^2))
     if (scaling_factor == 0){ # check if scaling factor is zero
       scaling_factor <- Inf
