@@ -8,7 +8,7 @@
 #' @return A symEBcovMF object
 #' @export
 #'
-sym_ebcovmf_factors_init <- function(S, sym_ebcovmf_obj, init_L, init_lambda){
+sym_ebcovmf_factors_init <- function(sym_ebcovmf_obj, init_L, init_lambda){
   init_L_norms <- apply(init_L, 2, function(x){sqrt(sum(x^2))})
   if(any(abs(init_L_norms - 1) > 10^(-8))){
     stop('The columns of the loadings initialization should have L2 norm equal to 1')
@@ -17,21 +17,20 @@ sym_ebcovmf_factors_init <- function(S, sym_ebcovmf_obj, init_L, init_lambda){
   sym_ebcovmf_obj$L_pm <- init_L
   sym_ebcovmf_obj$lambda <- init_lambda
   K <- ncol(init_L)
-  n <- nrow(init_L)
   sym_ebcovmf_obj$KL <- rep(0, K)
   sym_ebcovmf_obj$fitted_gs <- rep(list(NULL), K)
 
-  sym_ebcovmf_obj$resid_s2 <- estimate_resid_s2(S = S,
+  sym_ebcovmf_obj$resid_s2 <- estimate_resid_s2(S = sym_ebcovmf_obj$S,
                                                 L = sym_ebcovmf_obj$L_pm,
                                                 lambda = sym_ebcovmf_obj$lambda,
-                                                n = n,
+                                                n = sym_ebcovmf_obj$n,
                                                 K = K)
 
-  sym_ebcovmf_obj$elbo <- compute_elbo(S = S,
+  sym_ebcovmf_obj$elbo <- compute_elbo(S = sym_ebcovmf_obj$S,
                                        L = sym_ebcovmf_obj$L_pm,
                                        lambda = sym_ebcovmf_obj$lambda,
                                        resid_s2 = sym_ebcovmf_obj$resid_s2,
-                                       n = n,
+                                       n = sym_ebcovmf_obj$n,
                                        K = K,
                                        KL = sym_ebcovmf_obj$KL)
   return(sym_ebcovmf_obj)
