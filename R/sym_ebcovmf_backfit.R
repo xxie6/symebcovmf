@@ -13,21 +13,18 @@
 #'
 sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 100, backfit_tol = 10^(-8), optim_maxiter= 500, optim_tol = 10^(-8)){
   K <- length(sym_ebcovmf_obj$lambda)
+  kset <- c(1:K)
   iter <- 1
   obj_diff <- Inf
   sym_ebcovmf_obj$backfit_vec_elbo_full <- NULL
   sym_ebcovmf_obj$backfit_iter_elbo_vec <- NULL
 
-  # refit lambda
-  # sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj, maxiter = 25)
-
   while((iter <= backfit_maxiter) && (obj_diff > backfit_tol)){
-    # print(iter)
     obj_old <- sym_ebcovmf_obj$elbo
     # loop through each factor
-    for (k in 1:K){
-      # print(k)
+    for (k in kset){
       print(paste('Updating factor', k))
+
       # compute residual matrix
       R <- S - tcrossprod(sym_ebcovmf_obj$L_pm[,-k, drop = FALSE] %*% diag(sqrt(sym_ebcovmf_obj$lambda[-k]), ncol = (K-1)))
       R2k <- compute_R2(S, sym_ebcovmf_obj$L_pm[,-k, drop = FALSE], sym_ebcovmf_obj$lambda[-k], (K-1)) #this is right but I have one instance where the values don't match what I expect
@@ -50,10 +47,10 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
         print(paste('update to factor', k, 'decreased the elbo by', abs(obj_diff)))
       }
 
-      #print(sym_ebcovmf_obj$elbo)
-      # sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj) # add refitting step?
-      #print(sym_ebcovmf_obj$elbo)
+      # add refitting step
+      sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj, maxiter = 1, remove_null = FALSE)
     }
+    kset <- which(sym_ebcovmf_obj$lambda != 0)
     sym_ebcovmf_obj$backfit_iter_elbo_vec <- c(sym_ebcovmf_obj$backfit_iter_elbo_vec, sym_ebcovmf_obj$elbo)
 
     iter <- iter + 1
