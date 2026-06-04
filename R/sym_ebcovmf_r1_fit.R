@@ -11,15 +11,18 @@
 #' @return A symEBcovMF object
 #' @export
 #'
-sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init = NULL, sign_constraint = NULL){
+sym_ebcovmf_r1_fit <- function(sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init = NULL, sign_constraint = NULL){
   if (is.null(sym_ebcovmf_obj$L_pm) == FALSE){
     K <- length(sym_ebcovmf_obj$lambda) + 1
-    R <- S - tcrossprod(sym_ebcovmf_obj$L_pm %*% diag(sqrt(sym_ebcovmf_obj$lambda), ncol = (K-1)))
-    R2k <- compute_R2(S, sym_ebcovmf_obj$L_pm, sym_ebcovmf_obj$lambda, (K-1))
+    R <- sym_ebcovmf_obj$S - tcrossprod(sym_ebcovmf_obj$L_pm %*% diag(sqrt(sym_ebcovmf_obj$lambda), ncol = (K-1)))
+    R2k <- compute_R2(sym_ebcovmf_obj$S,
+                      sym_ebcovmf_obj$L_pm,
+                      sym_ebcovmf_obj$lambda,
+                      (K-1))
   } else {
     K <- 1
-    R <- S
-    R2k <- sum(S^2)
+    R <- sym_ebcovmf_obj$S
+    R2k <- sum(sym_ebcovmf_obj$S^2)
   }
   sym_ebcovmf_obj.old <- sym_ebcovmf_obj
 
@@ -123,7 +126,6 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
 
   # nullcheck
   if((lambda_k == 0) | (sqrt(sum(v^2)) < 10^(-8))){
-    #print('additional factor does not improve fit')
     sym_ebcovmf_obj <- sym_ebcovmf_obj.old
   } else {
     sym_ebcovmf_obj$L_pm <- cbind(sym_ebcovmf_obj$L_pm, v)
