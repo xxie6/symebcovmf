@@ -15,13 +15,28 @@ nullcheck_factors <- function(sym_ebcovmf_obj, L2_tol = 10^(-8)){
   keep_idx <- setdiff(c(1:length(sym_ebcovmf_obj$lambda)), null_idx)
 
   if (length(keep_idx) < length(sym_ebcovmf_obj$lambda)){
-    #remove factors
+    # remove factors
     sym_ebcovmf_obj$L_pm <- sym_ebcovmf_obj$L_pm[,keep_idx]
     sym_ebcovmf_obj$lambda <- sym_ebcovmf_obj$lambda[keep_idx]
     sym_ebcovmf_obj$KL <- sym_ebcovmf_obj$KL[keep_idx]
     sym_ebcovmf_obj$fitted_gs <- sym_ebcovmf_obj$fitted_gs[keep_idx]
   }
 
-  #shouldn't need to recompute objective function or other things
+  K <- length(keep_idx)
+  # recompute residual variance estimate
+  sym_ebcovmf_obj$resid_s2 <- estimate_resid_s2(S = sym_ebcovmf_obj$S,
+                                                L = sym_ebcovmf_obj$L_pm,
+                                                lambda = sym_ebcovmf_obj$lambda,
+                                                n = sym_ebcovmf_obj$n,
+                                                K = K)
+
+  # recompute elbo
+  curr_elbo <- compute_elbo(S = sym_ebcovmf_obj$S,
+                            L = sym_ebcovmf_obj$L_pm,
+                            lambda = sym_ebcovmf_obj$lambda,
+                            resid_s2 = sym_ebcovmf_obj$resid_s2,
+                            n = sym_ebcovmf_obj$n,
+                            K = K,
+                            KL = sym_ebcovmf_obj$KL)
   return(sym_ebcovmf_obj)
 }
