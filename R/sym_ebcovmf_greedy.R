@@ -16,19 +16,21 @@ sym_ebcovmf_greedy <- function(sym_ebcovmf_obj, ebnm_fn, Kmax, maxiter, rank_one
   # check if the symebcovmf object has a non-null L estimate
   if (is.null(sym_ebcovmf_obj$L_pm) == FALSE){
     R <- sym_ebcovmf_obj$S - tcrossprod(sym_ebcovmf_obj$L_pm %*% diag(sqrt(sym_ebcovmf_obj$lambda), ncol = ncol(sym_ebcovmf_obj$L_pm)))
+    curr_K <- ncol(sym_ebcovmf_obj$L_pm)
   }
-  
+
   # initialize greedy fitting procedure
+  curr_K <- 0
   curr_rank <- 0
   obj_diff <- Inf
   while ((curr_rank < Kmax) & (obj_diff > tol)){
     # add factor
     print(paste('Adding factor', (curr_rank + 1)))
-    sym_ebcovmf_obj <- sym_ebcovmf_r1_fit(R, 
-                                          sym_ebcovmf_obj, 
-                                          ebnm_fn, 
-                                          maxiter, 
-                                          rank_one_tol, 
+    sym_ebcovmf_obj <- sym_ebcovmf_r1_fit(R,
+                                          sym_ebcovmf_obj,
+                                          ebnm_fn,
+                                          maxiter,
+                                          rank_one_tol,
                                           sign_constraint = sign_constraint)
 
     # check if new factor was added; if not then break
@@ -42,7 +44,7 @@ sym_ebcovmf_greedy <- function(sym_ebcovmf_obj, ebnm_fn, Kmax, maxiter, rank_one
           sym_ebcovmf_obj <- refit_lambda(sym_ebcovmf_obj)
         }
         # compute the objective function difference
-        obj_diff <- sym_ebcovmf_obj$vec_elbo_K[curr_rank + 1] - sym_ebcovmf_obj$vec_elbo_K[curr_rank]
+        obj_diff <- sym_ebcovmf_obj$vec_elbo_K[curr_K + curr_rank + 1] - sym_ebcovmf_obj$vec_elbo_K[curr_K + curr_rank]
         if (obj_diff < tol){
           print(paste0('The objective function difference is: ', obj_diff, '. We will stop adding factors.' ))
         }
