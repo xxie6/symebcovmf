@@ -1,6 +1,5 @@
 #' Fit a rank K symEBcovMF model using backfit
 #'
-#' @param S A n-by-n Gram/covariance matrix
 #' @param sym_ebcovmf_obj A symEBcovMF object
 #' @param ebnm_fn An EBNM solver
 #' @param backfit_maxiter The maximum number of iterations used when backfitting the rank K fit

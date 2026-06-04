@@ -4,17 +4,9 @@
 \alias{refit_lambda}
 \title{Refit lambda}
 \usage{
-refit_lambda(
-  S,
-  sym_ebcovmf_obj,
-  maxiter = 100,
-  tol = 10^(-6),
-  remove_null = TRUE
-)
+refit_lambda(sym_ebcovmf_obj, maxiter = 100, tol = 10^(-6), remove_null = TRUE)
 }
 \arguments{
-\item{S}{An n-by-n Gram/covariance matrix}
-
 \item{sym_ebcovmf_obj}{A symEBcovMF object}
 
 \item{maxiter}{The maximum number of iterations for optimization}

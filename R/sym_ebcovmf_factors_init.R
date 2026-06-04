@@ -1,6 +1,5 @@
 #' Initialize the factors at specified values
 #'
-#' @param S A n-by-n Gram/covariance matrix
 #' @param sym_ebcovmf_obj A symEBcovMF object
 #' @param init_L An initial estimate for the loadings matrix. The columns of this matrix should have L2 norm equal to 1.
 #' @param init_lambda A vector containing the initial values for the non-negative weights

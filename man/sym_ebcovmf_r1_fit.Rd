@@ -5,7 +5,6 @@
 \title{Fit rank one symEBcovMF model}
 \usage{
 sym_ebcovmf_r1_fit(
-  S,
   sym_ebcovmf_obj,
   ebnm_fn,
   maxiter,
@@ -15,8 +14,6 @@ sym_ebcovmf_r1_fit(
 )
 }
 \arguments{
-\item{S}{An n-by-n Gram/covariance matrix}
-
 \item{sym_ebcovmf_obj}{A symEBcovMF object}
 
 \item{ebnm_fn}{An EBNM solver}

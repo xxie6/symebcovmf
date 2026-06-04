@@ -5,7 +5,6 @@
 \title{Fit a rank K symEBcovMF model using backfit}
 \usage{
 sym_ebcovmf_backfit(
-  S,
   sym_ebcovmf_obj,
   ebnm_fn,
   backfit_maxiter = 100,
@@ -15,8 +14,6 @@ sym_ebcovmf_backfit(
 )
 }
 \arguments{
-\item{S}{A n-by-n Gram/covariance matrix}
-
 \item{sym_ebcovmf_obj}{A symEBcovMF object}
 
 \item{ebnm_fn}{An EBNM solver}

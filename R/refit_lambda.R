@@ -1,6 +1,5 @@
 #' Refit lambda
 #'
-#' @param S An n-by-n Gram/covariance matrix
 #' @param sym_ebcovmf_obj A symEBcovMF object
 #' @param maxiter The maximum number of iterations for optimization
 #' @param tol The convergence tolerance parameter for optimization

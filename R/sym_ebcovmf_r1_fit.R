@@ -1,6 +1,5 @@
 #' Fit rank one symEBcovMF model
 #'
-#' @param S An n-by-n Gram/covariance matrix
 #' @param sym_ebcovmf_obj A symEBcovMF object
 #' @param ebnm_fn An EBNM solver
 #' @param maxiter The maximum number of iterations used during optimization
