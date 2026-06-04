@@ -7,7 +7,7 @@
 #' @return A symEBcovMF object
 #' @export
 #'
-nullcheck_factors <- function(sym_ebcovmf_obj, L2_tol = 10^(-8)){
+nullcheck_factors <- function(S, sym_ebcovmf_obj, L2_tol = 10^(-8)){
   null_lambda_idx <- which(sym_ebcovmf_obj$lambda == 0)
   factor_L2_norms <- apply(sym_ebcovmf_obj$L_pm, 2, function(v){sqrt(sum(v^2))})
   null_factor_idx <- which(factor_L2_norms < L2_tol)
