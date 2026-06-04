@@ -10,6 +10,8 @@ nullcheck_factors(sym_ebcovmf_obj, L2_tol = 10^(-8))
 \item{sym_ebcovmf_obj}{A symEBcovMF object}
 
 \item{L2_tol}{The threshold for the L2 norm of the factor}
+
+\item{S}{An n-by-n Gram/covariance matrix}
 }
 \value{
 A symEBcovMF object
