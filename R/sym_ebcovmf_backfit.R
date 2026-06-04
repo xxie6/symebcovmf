@@ -60,6 +60,6 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
     obj_diff <- abs(sym_ebcovmf_obj$elbo - obj_old)
   }
   # nullcheck
-  sym_ebcovmf_obj <- nullcheck_factors(sym_ebcovmf_obj)
+  sym_ebcovmf_obj <- nullcheck_factors(S, sym_ebcovmf_obj)
   return(sym_ebcovmf_obj)
 }

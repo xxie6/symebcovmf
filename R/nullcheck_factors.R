@@ -1,5 +1,6 @@
 #' Check for factors that are zero vectors or have zero weight
 #'
+#' @param S An n-by-n Gram/covariance matrix
 #' @param sym_ebcovmf_obj A symEBcovMF object
 #' @param L2_tol The threshold for the L2 norm of the factor
 #'
@@ -22,6 +23,19 @@ nullcheck_factors <- function(sym_ebcovmf_obj, L2_tol = 10^(-8)){
     sym_ebcovmf_obj$fitted_gs <- sym_ebcovmf_obj$fitted_gs[keep_idx]
   }
 
-  #shouldn't need to recompute objective function or other things
+  #recompute the residual variance and elbo
+  K <- length(keep_idx)
+  sym_ebcovmf_obj$resid_s2 <- estimate_resid_s2(S = S,
+                                                L = sym_ebcovmf_obj$L_pm,
+                                                lambda = sym_ebcovmf_obj$lambda,
+                                                n = sym_ebcovmf_obj$n,
+                                                K = K)
+  curr_elbo <- compute_elbo(S = S,
+                            L = sym_ebcovmf_obj$L_pm,
+                            lambda = sym_ebcovmf_obj$lambda,
+                            resid_s2 = sym_ebcovmf_obj$resid_s2,
+                            n = sym_ebcovmf_obj$n,
+                            K = K,
+                            KL = sym_ebcovmf_obj$KL)
   return(sym_ebcovmf_obj)
 }
