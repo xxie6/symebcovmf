@@ -23,6 +23,10 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
     obj_old <- sym_ebcovmf_obj$elbo
     # loop through each factor
     for (k in kset){
+      if(sym_ebcovmf_obj$lambda[k] == 0){
+        print(paste('Skipping factor', k, 'because lambda is 0'))
+        next
+      }
       print(paste('Updating factor', k))
 
       # compute residual matrix
