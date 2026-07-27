@@ -69,7 +69,7 @@ optimize_factor <- function(R, ebnm_fn, maxiter, tol, v_init, lambda_k, g_k_init
     # store KL
     rank_one_KL.old <- rank_one_KL
     rank_one_KL <- as.numeric(e$log_likelihood) +
-      - normal_means_loglik(x, sqrt(resid_s2), e$posterior$mean, e$posterior$mean^2 + e$posterior$sd^2)
+      - normal_means_loglik(x, sqrt(s2), e$posterior$mean, e$posterior$mean^2 + e$posterior$sd^2)
 
     # update resid_s2
     resid_s2.old <- resid_s2
