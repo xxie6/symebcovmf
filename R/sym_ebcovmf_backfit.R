@@ -23,15 +23,15 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
     obj_old <- sym_ebcovmf_obj$elbo
     # loop through each factor
     for (k in kset){
-      if(sym_ebcovmf_obj$lambda[k] == 0){
+      R <- S - tcrossprod(sym_ebcovmf_obj$L_pm[,-k, drop = FALSE] %*% diag(sqrt(sym_ebcovmf_obj$lambda[-k]), ncol = (K-1)))
+      if(sym_ebcovmf_obj$lambda[k] == 0 | as.numeric(t(sym_ebcovmf_obj$L_pm[,k, drop = FALSE]) %*% R %*% sym_ebcovmf_obj$L_pm[,k, drop = FALSE]) <= 0){
         print(paste('Skipping factor', k, 'because lambda is 0'))
         next
       }
       print(paste('Updating factor', k))
 
-      # compute residual matrix
-      R <- S - tcrossprod(sym_ebcovmf_obj$L_pm[,-k, drop = FALSE] %*% diag(sqrt(sym_ebcovmf_obj$lambda[-k]), ncol = (K-1)))
-      R2k <- compute_R2(S, sym_ebcovmf_obj$L_pm[,-k, drop = FALSE], sym_ebcovmf_obj$lambda[-k], (K-1)) #this is right but I have one instance where the values don't match what I expect
+      # compute R2
+      R2k <- compute_R2(S, sym_ebcovmf_obj$L_pm[,-k, drop = FALSE], sym_ebcovmf_obj$lambda[-k], (K-1))
 
       # optimize factor
       factor_proposed <- optimize_factor(R, ebnm_fn, optim_maxiter, optim_tol, sym_ebcovmf_obj$L_pm[,k], sym_ebcovmf_obj$lambda[k], sym_ebcovmf_obj$fitted_gs[[k]], R2k, sym_ebcovmf_obj$n, sym_ebcovmf_obj$KL[-k])
@@ -51,10 +51,10 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
         print(paste('update to factor', k, 'decreased the elbo by', abs(obj_diff)))
       }
 
-      # add refitting step
+      # add refitting step (optional)
       sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj, maxiter = 1, remove_null = FALSE)
     }
-    kset <- which(sym_ebcovmf_obj$lambda != 0)
+    # kset <- which(sym_ebcovmf_obj$lambda != 0)
     sym_ebcovmf_obj$backfit_iter_elbo_vec <- c(sym_ebcovmf_obj$backfit_iter_elbo_vec, sym_ebcovmf_obj$elbo)
 
     iter <- iter + 1
