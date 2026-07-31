@@ -7,6 +7,8 @@
 #' @param backfit_tol The convergence tolerance used for the backfit
 #' @param optim_maxiter The maximum number of iterations used when optimizing each factor
 #' @param optim_tol The convergence tolerance used for optimizing each factor
+#' @param refit_lam True or False for if you want to refit the lambda values after each factor is added
+#' @param refit_lam_maxiter The maximum number of iterations for the refitting lambda optimization
 #'
 #' @return A symEBcovMF object
 #' @export

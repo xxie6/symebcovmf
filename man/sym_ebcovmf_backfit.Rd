@@ -30,6 +30,10 @@ sym_ebcovmf_backfit(
 \item{optim_maxiter}{The maximum number of iterations used when optimizing each factor}
 
 \item{optim_tol}{The convergence tolerance used for optimizing each factor}
+
+\item{refit_lam}{True or False for if you want to refit the lambda values after each factor is added}
+
+\item{refit_lam_maxiter}{The maximum number of iterations for the refitting lambda optimization}
 }
 \value{
 A symEBcovMF object
