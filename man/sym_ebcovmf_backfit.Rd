@@ -11,7 +11,9 @@ sym_ebcovmf_backfit(
   backfit_maxiter = 100,
   backfit_tol = 10^(-8),
   optim_maxiter = 500,
-  optim_tol = 10^(-8)
+  optim_tol = 10^(-8),
+  refit_lam = FALSE,
+  refit_lam_maxiter = 1
 )
 }
 \arguments{
