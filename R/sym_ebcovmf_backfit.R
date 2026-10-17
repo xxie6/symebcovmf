@@ -14,6 +14,12 @@
 #' @export
 #'
 sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 100, backfit_tol = 10^(-8), optim_maxiter= 500, optim_tol = 10^(-8), refit_lam = FALSE, refit_lam_maxiter = 1){
+  # check if the greedy fit had a failure
+  if (sym_ebcovmf_obj$failyn == TRUE){
+    print('Will not perform backfit due to failure in previous fit')
+    return(sym_ebcovmf_obj)
+  }
+
   K <- length(sym_ebcovmf_obj$lambda)
   kset <- c(1:K)
   iter <- 1
@@ -26,7 +32,12 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
     # loop through each factor
     for (k in kset){
       R <- S - tcrossprod(sym_ebcovmf_obj$L_pm[,-k, drop = FALSE] %*% diag(sqrt(sym_ebcovmf_obj$lambda[-k]), ncol = (K-1)))
-      if(sym_ebcovmf_obj$lambda[k] == 0 | as.numeric(t(sym_ebcovmf_obj$L_pm[,k, drop = FALSE]) %*% R %*% sym_ebcovmf_obj$L_pm[,k, drop = FALSE]) <= 0){
+      if(as.numeric(t(sym_ebcovmf_obj$L_pm[,k, drop = FALSE]) %*% R %*% sym_ebcovmf_obj$L_pm[,k, drop = FALSE]) <= 0){
+        sym_ebcovmf_obj$failyn <- TRUE
+        print(paste('Factor', k, 'has negative variance, v^{T}Rv. Stopping backfit'))
+        break
+      }
+      if(sym_ebcovmf_obj$lambda[k] == 0){
         print(paste('Skipping factor', k, 'because lambda is 0'))
         next
       }
@@ -53,13 +64,22 @@ sym_ebcovmf_backfit <- function(S, sym_ebcovmf_obj, ebnm_fn, backfit_maxiter = 1
         print(paste('update to factor', k, 'decreased the elbo by', abs(obj_diff)))
       }
 
+      if (factor_proposed$failyn == TRUE){
+        sym_ebcovmf_obj$failyn <- TRUE
+        print(paste('Update to factor', k, 'failed. Stopping backfit'))
+        break
+      }
+
       # add refitting step (optional)
       if (refit_lam == TRUE){
         sym_ebcovmf_obj <- refit_lambda(S, sym_ebcovmf_obj, maxiter = refit_lam_maxiter, remove_null = FALSE)
       }
     }
-    # kset <- which(sym_ebcovmf_obj$lambda != 0)
     sym_ebcovmf_obj$backfit_iter_elbo_vec <- c(sym_ebcovmf_obj$backfit_iter_elbo_vec, sym_ebcovmf_obj$elbo)
+
+    if (sym_ebcovmf_obj$failyn == TRUE){
+      break
+    }
 
     iter <- iter + 1
     obj_diff <- abs(sym_ebcovmf_obj$elbo - obj_old)
