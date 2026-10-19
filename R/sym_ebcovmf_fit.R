@@ -27,6 +27,9 @@ sym_ebcovmf_fit <- function(S, ebnm_fn, Kmax, maxiter, rank_one_tol, tol, sign_c
     if (length(sym_ebcovmf_obj$vec_elbo_K) == curr_rank){
       print(paste('Adding factor', (curr_rank + 1), 'does not improve the objective function'))
       break
+    } else if (sym_ebcovmf_obj$failyn == TRUE){
+      print(paste('Adding factor', (curr_rank + 1), 'experienced a failure. We will stop adding factors.'))
+      break
     } else {
       if (curr_rank > 0){
         if (refit_lam == TRUE){

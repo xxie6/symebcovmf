@@ -20,6 +20,7 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
     K <- 1
     R <- S
     R2k <- sum(S^2)
+    sym_ebcovmf_obj$failyn <- FALSE
   }
   sym_ebcovmf_obj.old <- sym_ebcovmf_obj
 
@@ -80,11 +81,6 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
     }
     v <- e$posterior$mean/scaling_factor
 
-    # update lambda and R2
-    lambda_k.old <- lambda_k
-    lambda_k <- max(as.numeric(t(v) %*% R %*% v), 0)
-    R2 <- R2k - lambda_k^2
-
     #store estimate for g
     fitted_g_k.old <- fitted_g_k
     fitted_g_k <- e$fitted_g
@@ -94,9 +90,60 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
     rank_one_KL <- as.numeric(e$log_likelihood) +
       - normal_means_loglik(x, sqrt(resid_s2), e$posterior$mean, e$posterior$mean^2 + e$posterior$sd^2)
 
+    R2 <- R2k + lambda_k^2 - 2*lambda_k*as.numeric(t(v)%*% R %*%v)
+    ebnm_updated_elbo <- compute_elbo(resid_s2 = resid_s2,
+                                      n = sym_ebcovmf_obj$n,
+                                      KL = c(sym_ebcovmf_obj$KL, rank_one_KL),
+                                      R2 = R2)
+
+    # check 1: check if the EBNM problem leads to a large objective function decrease
+    ebnm_updated_elbo_diff <- ebnm_updated_elbo - curr_elbo
+    if (ebnm_updated_elbo_diff < 0){
+      print(paste('Update to g and q of factor', K, 'decreased elbo by', abs(ebnm_updated_elbo_diff)))
+      if (abs(ebnm_updated_elbo_diff) > 10^(-4)){
+        sym_ebcovmf_obj$failyn <- TRUE
+        # need to set estimate to old values
+        v <- v.old
+        fitted_g_k <- fitted_g_k.old
+        rank_one_KL <- rank_one_KL.old
+        R2 <- R2k - lambda_k^2
+        break #exit the for loop if this holds true
+      }
+    }
+
+    # check 2: check if v'Rv is negative
+    if (as.numeric(t(v) %*% R %*% v) < 0){
+      print(paste('Update to g and q of factor', K, 'made v\'Rv negative'))
+      sym_ebcovmf_obj$failyn <- TRUE
+      v <- v.old
+      fitted_g_k <- fitted_g_k.old
+      rank_one_KL <- rank_one_KL.old
+      R2 <- R2k - lambda_k^2
+      break #exit the for loop if this holds true
+    }
+
+    # update lambda and R2
+    lambda_k.old <- lambda_k
+    lambda_k <- max(as.numeric(t(v) %*% R %*% v), 0)
+    R2 <- R2k - lambda_k^2
+
     # update resid_s2
     resid_s2.old <- resid_s2
     resid_s2 <- estimate_resid_s2(n = sym_ebcovmf_obj$n, R2 = R2)
+
+    # check if the residual variance estimate is negative
+    # this shouldn't happen but I kept the check in to confirm empirically that this doesn't happen
+    if (resid_s2 < 0){
+      sym_ebcovmf_obj$failyn <- TRUE
+      v <- v.old
+      resid_s2 <- resid_s2.old
+      rank_one_KL <- rank_one_KL.old
+      lambda_k <- lambda_k.old
+      curr_elbo <- curr_elbo.old
+      fitted_g_k <- fitted_g_k.old
+      print(paste('Update to factor', K, 'made the residual variance estimate negative'))
+      break
+    }
 
     # check convergence
     curr_elbo.old <- curr_elbo
@@ -108,6 +155,9 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
       obj_diff <- curr_elbo - curr_elbo.old
     }
     if (obj_diff < 0){ # check if convergence_val < 0
+      if (abs(obj_diff) > 10^(-4)){ # check if the objective function decrease is very large.
+        sym_ebcovmf_obj$failyn <- TRUE
+      }
       v <- v.old
       resid_s2 <- resid_s2.old
       rank_one_KL <- rank_one_KL.old
@@ -122,8 +172,7 @@ sym_ebcovmf_r1_fit <- function(S, sym_ebcovmf_obj, ebnm_fn, maxiter, tol, v_init
   }
 
   # nullcheck
-  if((lambda_k == 0) | (sqrt(sum(v^2)) < 10^(-8))){
-    #print('additional factor does not improve fit')
+  if((lambda_k == 0) | (sqrt(sum(v^2)) < 10^(-8))){ # if either of these hold, then that means the factor doesn't help the fit
     sym_ebcovmf_obj <- sym_ebcovmf_obj.old
   } else {
     sym_ebcovmf_obj$L_pm <- cbind(sym_ebcovmf_obj$L_pm, v)
