@@ -34,5 +34,6 @@ sym_ebcovmf_factors_init <- function(S, sym_ebcovmf_obj, init_L, init_lambda){
                                        n = n,
                                        K = K,
                                        KL = sym_ebcovmf_obj$KL)
+  sym_ebcovmf_obj$failyn <- FALSE
   return(sym_ebcovmf_obj)
 }
